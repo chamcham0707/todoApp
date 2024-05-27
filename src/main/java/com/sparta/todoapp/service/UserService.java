@@ -1,13 +1,17 @@
 package com.sparta.todoapp.service;
 
+import com.sparta.todoapp.dto.LoginRequestDto;
 import com.sparta.todoapp.dto.SignupRequestDto;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.entity.UserRoleEnum;
+import com.sparta.todoapp.jwt.JwtUtil;
 import com.sparta.todoapp.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -15,6 +19,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
