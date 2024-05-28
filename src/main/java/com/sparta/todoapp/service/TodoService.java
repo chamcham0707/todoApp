@@ -41,4 +41,17 @@ public class TodoService {
 
         return todoList.stream().map(TodoResponseDto::new).toList();
     }
+
+    public TodoResponseDto editTodo(User user, TodoRequestDto requestDto) {
+        Todo todo = todoRepository.findByUserId(user.getId()).orElseThrow(
+                () -> new IllegalArgumentException("수정할 권한이 없습니다.")
+        );
+
+        todo.update(requestDto);
+        todoRepository.save(todo);
+
+        TodoResponseDto responseDto = new TodoResponseDto(todo);
+
+        return responseDto;
+    }
 }

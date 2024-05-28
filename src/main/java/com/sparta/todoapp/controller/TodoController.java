@@ -32,4 +32,9 @@ public class TodoController {
     public ResponseEntity<List<TodoResponseDto>> allInquiryTodo() {
         return ResponseEntity.status(200).body(todoService.allInquiryTodo());
     }
+
+    @PutMapping()
+    public ResponseEntity<TodoResponseDto> editTodo(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody TodoRequestDto requestDto) {
+        return ResponseEntity.status(200).body(todoService.editTodo(userDetails.getUser(), requestDto));
+    }
 }
