@@ -15,4 +15,9 @@ public class MyExceptionHandler {
     public ResponseEntity<String> noAuthrotyHandler() {
         return ResponseEntity.status(400).body("권한이 없습니다.");
     }
+
+    @ExceptionHandler(NoContentException.class)
+    public ResponseEntity<String> noContentHandler() {
+        return ResponseEntity.status(400).body("내용이 없습니다.");
+    }
 }
