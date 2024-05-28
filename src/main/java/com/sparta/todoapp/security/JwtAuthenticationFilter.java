@@ -20,7 +20,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final JwtUtil jwtUtil;
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-        System.out.println("JwtAuthenticationFileter construct");
         this.jwtUtil = jwtUtil;
         setFilterProcessesUrl("/api/user/login");
     }
@@ -30,10 +29,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // HTTP 요청과 응답을 받아 인증 시도 -> 성공 시 Authentication 객체 반환
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        System.out.println("JwtAuthenticationFilter::attemptAuthentication()");
+        log.info("로그인 시도");
         try {
             LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
-
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             requestDto.getUsername(),
@@ -42,7 +40,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     )
             );
         } catch (IOException e) {
-            System.out.println("예외에 들어옴");
             log.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
@@ -50,7 +47,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        System.out.println("JwtAuthenticationFilter::successfulAuthentication()");
+        log.info("로그인 성공");
+
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
@@ -60,7 +58,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        System.out.println("JwtAuthenticationFilter::unsuccessfulAuthentication()");
+        log.info("로그인 실패");
         response.setStatus(401);
     }
 }

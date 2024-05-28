@@ -37,7 +37,6 @@ public class WebSecurityConfig {
     // AuthenticationManager를 구성하여 반환
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        System.out.println("WebSecurityConfig::authenticationManager()");
         return configuration.getAuthenticationManager();
     }
 
@@ -46,7 +45,6 @@ public class WebSecurityConfig {
     // AuthenticationManager를 설정
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        System.out.println("WebSecurityConfig::jwtAuthenticationFilter()");
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
@@ -56,13 +54,11 @@ public class WebSecurityConfig {
     // jwtUtil과 userDetailsService를 필터에 주입
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        System.out.println("WebSecurityConfig::jwtAuthorizationFilter()");
         return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("WebSecurityConfig::securityFilterChain()");
         // CSRF 설정
         // CSRF 보호를 비활성화
         http.csrf((csrf) -> csrf.disable());
@@ -77,14 +73,9 @@ public class WebSecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정. 정적 리소스에 대한 요청을 허용
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
-                        .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+//                        .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+                        .requestMatchers("/api/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증을 요구
-        );
-
-        // 로그인 페이지 설정 정의
-        http.formLogin((formLogin) ->
-                formLogin
-                        .loginPage("/api/user/login-page").permitAll()
         );
 
         // 필터 관리
