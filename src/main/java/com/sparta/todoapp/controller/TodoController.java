@@ -20,4 +20,9 @@ public class TodoController {
     public ResponseEntity<TodoResponseDto> createTodo(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody TodoRequestDto requestDto) {
         return ResponseEntity.status(200).body(todoService.createTodo(userDetails.getUser(), requestDto));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TodoResponseDto> choiceInquiryTodo(@PathVariable Long id) {
+        return ResponseEntity.status(200).body(todoService.choiceInquiryTodo(id));
+    }
 }
