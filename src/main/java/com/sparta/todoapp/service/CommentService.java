@@ -39,7 +39,6 @@ public class CommentService {
     public CommentResponseDto editComment(User user, Long commentId, CommentRequestDto requestDto) {
         checkContentEmpty(requestDto);
 
-        // 1. 수정하고자 하는 사용자가 댓글을 작성한 사용자인지 확인
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NoExistCommentException()
         );
@@ -48,13 +47,24 @@ public class CommentService {
             throw new NoAuthorityException();
         }
 
-        // 2. 댓글 수정 후 DB 저장
         comment.update(requestDto);
         commentRepository.save(comment);
 
-        // 3. responseDto 반환
         CommentResponseDto responseDto = new CommentResponseDto(comment);
         return responseDto;
+    }
+
+    public String deleteComment(User user, Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new NoExistCommentException()
+        );
+
+        if (comment.getUser().getId() != user.getId()) {
+            throw new NoAuthorityException();
+        }
+
+        commentRepository.delete(comment);
+        return "성공적으로 삭제되었습니다.";
     }
 
     private void checkContentEmpty(CommentRequestDto requestDto) {

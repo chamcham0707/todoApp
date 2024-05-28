@@ -25,4 +25,9 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> editComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId, @RequestBody CommentRequestDto requestDto) {
         return ResponseEntity.status(200).body(commentService.editComment(userDetails.getUser(), commentId, requestDto));
     }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<String> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId) {
+        return ResponseEntity.status(200).body(commentService.deleteComment(userDetails.getUser(), commentId));
+    }
 }
