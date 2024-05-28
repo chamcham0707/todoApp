@@ -33,8 +33,13 @@ public class TodoController {
         return ResponseEntity.status(200).body(todoService.allInquiryTodo());
     }
 
-    @PutMapping()
-    public ResponseEntity<TodoResponseDto> editTodo(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody TodoRequestDto requestDto) {
-        return ResponseEntity.status(200).body(todoService.editTodo(userDetails.getUser(), requestDto));
+    @PutMapping("/{id}")
+    public ResponseEntity<TodoResponseDto> editTodo(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody TodoRequestDto requestDto, @PathVariable Long id) {
+        return ResponseEntity.status(200).body(todoService.editTodo(userDetails.getUser(), requestDto, id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTodo(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id) {
+        return ResponseEntity.status(200).body(todoService.deleteTodo(userDetails.getUser(), id));
     }
 }

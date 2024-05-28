@@ -4,13 +4,13 @@ import com.sparta.todoapp.dto.TodoRequestDto;
 import com.sparta.todoapp.dto.TodoResponseDto;
 import com.sparta.todoapp.entity.Todo;
 import com.sparta.todoapp.entity.User;
+import com.sparta.todoapp.exception.NoAuthorityException;
+import com.sparta.todoapp.exception.NoExistTodoException;
 import com.sparta.todoapp.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,10 +42,8 @@ public class TodoService {
         return todoList.stream().map(TodoResponseDto::new).toList();
     }
 
-    public TodoResponseDto editTodo(User user, TodoRequestDto requestDto) {
-        Todo todo = todoRepository.findByUserId(user.getId()).orElseThrow(
-                () -> new IllegalArgumentException("수정할 권한이 없습니다.")
-        );
+    public TodoResponseDto editTodo(User user, TodoRequestDto requestDto, Long id) {
+        Todo todo = checkAuthorityTodoByUserId(id, user.getId());
 
         todo.update(requestDto);
         todoRepository.save(todo);
@@ -53,5 +51,25 @@ public class TodoService {
         TodoResponseDto responseDto = new TodoResponseDto(todo);
 
         return responseDto;
+    }
+
+    public String deleteTodo(User user, Long id) throws NoExistTodoException {
+        Todo todo = checkAuthorityTodoByUserId(id, user.getId());
+
+        todoRepository.delete(todo);
+
+        return "삭제가 완료되었습니다.";
+    }
+
+    private Todo checkAuthorityTodoByUserId(Long todoId, Long userId) throws NoExistTodoException {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new NoExistTodoException()
+        );
+
+        if (todo.getUser().getId() != userId) {
+            throw new NoAuthorityException();
+        }
+
+        return todo;
     }
 }
