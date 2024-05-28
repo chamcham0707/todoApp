@@ -16,9 +16,13 @@ public class CommentController {
 
     private final CommentService commentService;
 
-
     @PostMapping("/{todoId}")
     public ResponseEntity<CommentResponseDto> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long todoId, @RequestBody CommentRequestDto requestDto) {
         return ResponseEntity.status(200).body(commentService.createComment(userDetails.getUser(), todoId, requestDto));
+    }
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<CommentResponseDto> editComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId, @RequestBody CommentRequestDto requestDto) {
+        return ResponseEntity.status(200).body(commentService.editComment(userDetails.getUser(), commentId, requestDto));
     }
 }

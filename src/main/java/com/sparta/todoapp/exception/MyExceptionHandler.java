@@ -20,4 +20,9 @@ public class MyExceptionHandler {
     public ResponseEntity<String> noContentHandler() {
         return ResponseEntity.status(400).body("내용이 없습니다.");
     }
+
+    @ExceptionHandler(NoExistCommentException.class)
+    public ResponseEntity<String> noExistCommentHandler() {
+        return ResponseEntity.status(400).body("존재하지 않는 댓글입니다.");
+    }
 }

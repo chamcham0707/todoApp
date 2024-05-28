@@ -27,4 +27,8 @@ public class Comment extends Timestamped {
         this.user = user;
         this.todo = todo;
     }
+
+    public void update(CommentRequestDto requestDto) {
+        this.content = requestDto.getContent();
+    }
 }
