@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,5 +32,13 @@ public class TodoService {
 
         TodoResponseDto responseDto = new TodoResponseDto(todo);
         return responseDto;
+    }
+
+    public List<TodoResponseDto> allInquiryTodo() {
+        List<Todo> todoList = todoRepository.findAllByOrderByModifiedAtDesc().orElseThrow(
+                () -> new IllegalArgumentException("등록되어 있는 일정이 없습니다.")
+        );
+
+        return todoList.stream().map(TodoResponseDto::new).toList();
     }
 }

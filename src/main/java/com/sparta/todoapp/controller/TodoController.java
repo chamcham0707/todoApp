@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/todo")
 @RequiredArgsConstructor
@@ -24,5 +26,10 @@ public class TodoController {
     @GetMapping("/{id}")
     public ResponseEntity<TodoResponseDto> choiceInquiryTodo(@PathVariable Long id) {
         return ResponseEntity.status(200).body(todoService.choiceInquiryTodo(id));
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<TodoResponseDto>> allInquiryTodo() {
+        return ResponseEntity.status(200).body(todoService.allInquiryTodo());
     }
 }
