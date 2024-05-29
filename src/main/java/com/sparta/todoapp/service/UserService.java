@@ -27,14 +27,14 @@ public class UserService {
         // 회원 중복 확인
         Optional<User> checkUsername = userRepository.findByUsername(requestDto.getUsername());
         if (checkUsername.isPresent()) {
-            return ResponseEntity.status(400).body("회원가입 실패: 중복된 username이 존재합니다.");
+            return ResponseEntity.status(400).body("중복된 username 입니다.: " + requestDto.getUsername());
         }
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (requestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-                return ResponseEntity.status(400).body("회원가입 실패: 관리자 암호가 틀렸습니다.");
+                return ResponseEntity.status(400).body("관리자 암호가 틀렸습니다.");
             }
             role = UserRoleEnum.ADMIN;
         }

@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         log.info("로그인 성공");
 
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
@@ -54,11 +54,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String token = jwtUtil.createToken(username, role);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        response.setStatus(200);
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().write("로그인에 성공하였습니다.");
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.info("로그인 실패");
-        response.setStatus(401);
+        response.setStatus(400);
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().write("회원을 찾을 수 없습니다.");
     }
 }

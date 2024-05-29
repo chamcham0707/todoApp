@@ -1,5 +1,6 @@
 package com.sparta.todoapp.security;
 
+import com.sparta.todoapp.exception.InvalidTokenException;
 import com.sparta.todoapp.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -36,7 +37,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             log.info("token value: " + tokenValue);
 
             if (!jwtUtil.validateToken(tokenValue)) {
-                log.error("Token Error");
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.setContentType("text/plain;charset=UTF-8");
+                res.getWriter().write("토큰이 유효하지 않습니다.");
                 return;
             }
 

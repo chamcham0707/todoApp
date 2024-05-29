@@ -28,6 +28,9 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId) {
+        if (commentId == null) {
+            System.out.println("nullnullnullnullnullnull");
+        }
         return ResponseEntity.status(200).body(commentService.deleteComment(userDetails.getUser(), commentId));
     }
 }
