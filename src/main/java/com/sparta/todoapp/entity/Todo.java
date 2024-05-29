@@ -21,10 +21,15 @@ public class Todo extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Todo(User user, TodoRequestDto requestDto) {
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "file_id")
+    private File file;
+
+    public Todo(User user, TodoRequestDto requestDto, File file) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.user = user;
+        this.file = file;
     }
 
     public void update(TodoRequestDto requestDto) {

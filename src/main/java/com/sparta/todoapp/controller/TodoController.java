@@ -1,5 +1,6 @@
 package com.sparta.todoapp.controller;
 
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.sparta.todoapp.dto.TodoRequestDto;
 import com.sparta.todoapp.dto.TodoResponseDto;
 import com.sparta.todoapp.security.UserDetailsImpl;
@@ -11,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Validated
@@ -23,8 +26,12 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping()
-    public ResponseEntity<TodoResponseDto> createTodo(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody TodoRequestDto requestDto) {
-        return ResponseEntity.status(200).body(todoService.createTodo(userDetails.getUser(), requestDto));
+    public ResponseEntity<TodoResponseDto> createTodo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                      @RequestParam String title,
+                                                      @RequestParam String content,
+                                                      @RequestParam(required = false) MultipartFile file) throws IOException {
+        TodoRequestDto requestDto = new TodoRequestDto(title, content);
+        return ResponseEntity.status(200).body(todoService.createTodo(userDetails.getUser(), requestDto, file));
     }
 
     @GetMapping("/{id}")

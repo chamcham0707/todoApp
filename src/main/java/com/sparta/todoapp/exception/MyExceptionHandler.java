@@ -30,4 +30,14 @@ public class MyExceptionHandler {
     public ResponseEntity<String> invalidTokenHandler() {
         return ResponseEntity.status(400).body("토큰이 유효하지 않습니다.");
     }
+
+    @ExceptionHandler(LargeFileSizeException.class)
+    public ResponseEntity<String> largeFileSizeHandler() {
+        return ResponseEntity.status(400).body("파일 사이즈가 너무 큽니다. 5MB까지만 가능합니다.");
+    }
+
+    @ExceptionHandler(InvalidExtensionException.class)
+    public ResponseEntity<String> invalidExtensionHandler() {
+        return ResponseEntity.status(400).body("지원하지 않는 확장자입니다. jpg, png 파일만 업로드 가능합니다.");
+    }
 }
