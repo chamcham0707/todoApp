@@ -1,15 +1,18 @@
 package com.sparta.todoapp.config;
 
 
+import com.sparta.todoapp.aop.LoginMonitoringAop;
 import com.sparta.todoapp.jwt.JwtUtil;
 import com.sparta.todoapp.repository.UserRepository;
 import com.sparta.todoapp.security.JwtAuthenticationFilter;
 import com.sparta.todoapp.security.JwtAuthorizationFilter;
 import com.sparta.todoapp.security.UserDetailsServiceImpl;
+import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

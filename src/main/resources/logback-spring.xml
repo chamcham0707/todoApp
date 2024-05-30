@@ -1,7 +1,7 @@
 <configuration>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%green(%d{yyyyMMdd HH:mm:ss.SSS}) %highlight(%5level) [%thread] %cyan(%logger{0}:%line) - %yellow(%msg) %n</pattern>
+            <pattern>%green(%d{yyyyMMdd HH:mm:ss.SSS}) %highlight(%5level) [%thread] %cyan(%logger{0}:%line) - %yellow(%msg) %n%red(%exception{full})</pattern>
         </encoder>
     </appender>
 
@@ -16,7 +16,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>application.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>

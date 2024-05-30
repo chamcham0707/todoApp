@@ -45,4 +45,8 @@ public class UserService {
 
         return ResponseEntity.status(200).body("회원가입이 성공하였습니다.");
     }
+
+    public ResponseEntity<String> login(LoginRequestDto requestDto) {
+        return null;
+    }
 }
