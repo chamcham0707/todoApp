@@ -3,6 +3,7 @@ package com.sparta.todoapp.controller;
 import com.sparta.todoapp.dto.LoginRequestDto;
 import com.sparta.todoapp.dto.SignupRequestDto;
 import com.sparta.todoapp.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequestDto requestDto, BindingResult bindingResult) {
+        System.out.println("input signup controller");
         if (bindingResult.hasErrors()) {
             Map<String, String> errorMessages = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> errorMessages.put(error.getField(), error.getDefaultMessage()));
@@ -38,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDto requestDto) {
-        return userService.login(requestDto);
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
+        return userService.login(requestDto, response);
     }
 }

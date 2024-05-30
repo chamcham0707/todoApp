@@ -1,35 +1,53 @@
 package com.sparta.todoapp.aop;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.sparta.todoapp.dto.LoginRequestDto;
+import com.sparta.todoapp.entity.LoginPerformEnum;
+import com.sparta.todoapp.service.LoginLogService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Slf4j(topic = "로그인 모니터링 AOP")
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class LoginMonitoringAop {
 
-    //    @Pointcut("execution(* com.aop.controller..*.*(..))")
-//    @Pointcut("execution(* com.sparta.todoapp.security..*(..))")
-    @Pointcut("execution(* com.sparta.todoapp.security.JwtAuthenticationFilter.attemptAuthentication(..))")
-    private void attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {}
+    private final LoginLogService loginLogService;
 
-    @Pointcut("@annotation(org.springframework.web.bind.annotation.PostMapping)")
-    public void postMapping() {}
+    @Before("execution(* com.sparta.todoapp.controller.UserController.login(..))")
+    public void loginBefore(JoinPoint joinPoint) {
+        log.info("로그인 전");
 
-//    @Before("execution(* com.sparta.todoapp.security.JwtAuthenticationFilter.attemptAuthentication(request, response))")
-    @Before("attemptAuthentication(request, response))")
-    public void beforeAttemptAuthentication() {
-        log.info("attemp 메서드가 호출되기 전에 AOP 기능 수행");
+        Object[] args = joinPoint.getArgs();
+        LoginRequestDto requestDto = (LoginRequestDto) args[0];
+
+        loginLogService.saveLoginLog(requestDto, LoginPerformEnum.BEFORE);
     }
 
-    @Before("postMapping()")
-    public void beforePostMethod(JoinPoint pjp) {
-        log.info("post mapping");
+    @AfterReturning("execution(* com.sparta.todoapp.controller.UserController.login(..))")
+    public void loginSuccess(JoinPoint joinPoint) {
+        log.info("로그인 성공");
+
+        Object[] args = joinPoint.getArgs();
+        LoginRequestDto requestDto = (LoginRequestDto) args[0];
+
+        loginLogService.saveLoginLog(requestDto, LoginPerformEnum.SUCCESS);
+    }
+
+    @AfterThrowing("execution(* com.sparta.todoapp.controller.UserController.login(..))")
+    public void loginFailure(JoinPoint joinPoint) {
+        log.info("로그인 실패");
+
+        Object[] args = joinPoint.getArgs();
+        LoginRequestDto requestDto = (LoginRequestDto) args[0];
+
+        loginLogService.saveLoginLog(requestDto, LoginPerformEnum.FAILURE);
     }
 }

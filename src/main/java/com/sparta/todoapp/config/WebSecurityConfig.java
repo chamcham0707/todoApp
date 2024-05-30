@@ -1,18 +1,14 @@
 package com.sparta.todoapp.config;
 
 
-import com.sparta.todoapp.aop.LoginMonitoringAop;
 import com.sparta.todoapp.jwt.JwtUtil;
 import com.sparta.todoapp.repository.UserRepository;
-import com.sparta.todoapp.security.JwtAuthenticationFilter;
 import com.sparta.todoapp.security.JwtAuthorizationFilter;
 import com.sparta.todoapp.security.UserDetailsServiceImpl;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,12 +44,12 @@ public class WebSecurityConfig {
     // JwtAuthenticationFilter를 생성하고 구성
     // jwtUtil을 사용하여 JWT 유틸리티 객체를 필터에 주입
     // AuthenticationManager를 설정
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
-        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-        return filter;
-    }
+//    @Bean
+//    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+//        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
+//        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+//        return filter;
+//    }
 
     // JwtAuthorizationFilter를 생성하고 구성
     // jwtUtil과 userDetailsService를 필터에 주입
@@ -75,17 +71,18 @@ public class WebSecurityConfig {
 
         // 요청에 대한 인가 규칙을 정의
         http.authorizeHttpRequests((authorizeHttpRequests) ->
-                authorizeHttpRequests
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정. 정적 리소스에 대한 요청을 허용
-                        .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
-                        .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+                        authorizeHttpRequests
+                                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정. 정적 리소스에 대한 요청을 허용
+                                .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
+                                .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
 //                        .requestMatchers("/api/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
-                        .anyRequest().authenticated() // 그 외 모든 요청 인증을 요구
+                                .anyRequest().authenticated() // 그 외 모든 요청 인증을 요구
         );
 
         // 필터 관리
-        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class); // JWT 인가 필터 추가
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인증 필터 추가
+//        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class); // JWT 인가 필터 추가
+//        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인증 필터 추가
+        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인증 필터 추가
 
         return http.build();
     }

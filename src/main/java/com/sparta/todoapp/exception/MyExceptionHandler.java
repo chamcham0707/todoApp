@@ -40,4 +40,9 @@ public class MyExceptionHandler {
     public ResponseEntity<String> invalidExtensionHandler() {
         return ResponseEntity.status(400).body("지원하지 않는 확장자입니다. jpg, png 파일만 업로드 가능합니다.");
     }
+
+    @ExceptionHandler(LoginFailException.class)
+    public ResponseEntity<String> loginFailHandler() {
+        return ResponseEntity.status(400).body("로그인 실패하였습니다.");
+    }
 }

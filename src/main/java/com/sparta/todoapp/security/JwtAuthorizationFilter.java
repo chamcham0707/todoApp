@@ -1,7 +1,6 @@
 package com.sparta.todoapp.security;
 
 import com.sparta.todoapp.entity.UserRoleEnum;
-import com.sparta.todoapp.exception.InvalidTokenException;
 import com.sparta.todoapp.jwt.JwtUtil;
 import com.sparta.todoapp.repository.UserRepository;
 import io.jsonwebtoken.Claims;

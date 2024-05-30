@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @SpringBootApplication
-@EnableAspectJAutoProxy
+//@EnableAspectJAutoProxy
 public class TodoAppApplication {
 
     public static void main(String[] args) {
