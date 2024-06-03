@@ -2,6 +2,7 @@ package com.sparta.todoapp.entity;
 
 import com.sparta.todoapp.dto.CommentRequestDto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,8 @@ public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "빈 문자열은 허용되지 않습니다.")
     private String content;
 
     @ManyToOne

@@ -44,9 +44,7 @@ public class TodoService {
 
 
     public TodoResponseDto choiceInquiryTodo(Long id) {
-        Todo todo = todoRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 일정은 없습니다.")
-        );
+        Todo todo = findTodo(id);
 
         TodoResponseDto responseDto = new TodoResponseDto(todo);
         return responseDto;
@@ -61,7 +59,11 @@ public class TodoService {
     }
 
     public TodoResponseDto editTodo(User user, TodoRequestDto requestDto, Long id) {
-        Todo todo = checkAuthorityTodoByUserId(id, user.getId());
+        Todo todo = findTodo(id);
+
+        if (!Objects.equals(todo.getUser().getId(), user.getId())) {
+            throw new NoAuthorityException();
+        }
 
         todo.update(requestDto);
         todoRepository.save(todo);
@@ -72,23 +74,21 @@ public class TodoService {
     }
 
     public String deleteTodo(User user, Long id) throws NoExistTodoException {
-        Todo todo = checkAuthorityTodoByUserId(id, user.getId());
+        Todo todo = findTodo(id);
+
+        if (!Objects.equals(todo.getUser().getId(), user.getId())) {
+            throw new NoAuthorityException();
+        }
 
         todoRepository.delete(todo);
 
         return "삭제가 완료되었습니다.";
     }
 
-    private Todo checkAuthorityTodoByUserId(Long todoId, Long userId) throws NoExistTodoException {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(
+    private Todo findTodo(Long id) {
+        return todoRepository.findById(id).orElseThrow(
                 () -> new NoExistTodoException()
         );
-
-        if (todo.getUser().getId() != userId) {
-            throw new NoAuthorityException();
-        }
-
-        return todo;
     }
 
     private void validateFile(MultipartFile file) {

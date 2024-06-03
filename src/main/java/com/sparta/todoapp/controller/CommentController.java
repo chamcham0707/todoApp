@@ -4,10 +4,16 @@ import com.sparta.todoapp.dto.CommentRequestDto;
 import com.sparta.todoapp.dto.CommentResponseDto;
 import com.sparta.todoapp.security.UserDetailsImpl;
 import com.sparta.todoapp.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/comment")
@@ -17,12 +23,22 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{todoId}")
-    public ResponseEntity<CommentResponseDto> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long todoId, @RequestBody CommentRequestDto requestDto) {
+    public ResponseEntity<?>createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long todoId, @Valid @RequestBody CommentRequestDto requestDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errorMessages = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> errorMessages.put(error.getField(), error.getDefaultMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
+        }
         return ResponseEntity.status(200).body(commentService.createComment(userDetails.getUser(), todoId, requestDto));
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<CommentResponseDto> editComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId, @RequestBody CommentRequestDto requestDto) {
+    public ResponseEntity<?> editComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId, @Valid @RequestBody CommentRequestDto requestDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errorMessages = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> errorMessages.put(error.getField(), error.getDefaultMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
+        }
         return ResponseEntity.status(200).body(commentService.editComment(userDetails.getUser(), commentId, requestDto));
     }
 

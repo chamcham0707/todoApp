@@ -14,6 +14,8 @@ import com.sparta.todoapp.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -23,34 +25,28 @@ public class CommentService {
 
 
     public CommentResponseDto createComment(User user, Long todoId, CommentRequestDto requestDto) {
-        checkContentEmpty(requestDto);
-
         Todo todo = todoRepository.findById(todoId).orElseThrow(
                 () -> new NoExistTodoException()
         );
 
         Comment comment = new Comment(requestDto, user, todo);
-        commentRepository.save(comment);
 
-        CommentResponseDto responseDto = new CommentResponseDto(comment);
+        CommentResponseDto responseDto = new CommentResponseDto(commentRepository.save(comment));
         return responseDto;
     }
 
     public CommentResponseDto editComment(User user, Long commentId, CommentRequestDto requestDto) {
-        checkContentEmpty(requestDto);
-
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NoExistCommentException()
         );
 
-        if (comment.getUser().getId() != user.getId()) {
+        if (!Objects.equals(comment.getUser().getId() , user.getId())) {
             throw new NoAuthorityException();
         }
 
         comment.update(requestDto);
-        commentRepository.save(comment);
 
-        CommentResponseDto responseDto = new CommentResponseDto(comment);
+        CommentResponseDto responseDto = new CommentResponseDto(commentRepository.save(comment));
         return responseDto;
     }
 
@@ -59,17 +55,11 @@ public class CommentService {
                 () -> new NoExistCommentException()
         );
 
-        if (comment.getUser().getId() != user.getId()) {
+        if (!Objects.equals(comment.getUser().getId(), user.getId())) {
             throw new NoAuthorityException();
         }
 
         commentRepository.delete(comment);
         return "성공적으로 삭제되었습니다.";
-    }
-
-    private void checkContentEmpty(CommentRequestDto requestDto) {
-        if (requestDto.getContent() == "") {
-            throw new NoContentException();
-        }
     }
 }

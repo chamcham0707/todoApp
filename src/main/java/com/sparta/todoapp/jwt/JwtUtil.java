@@ -5,6 +5,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import java.util.Date;
 
 @Slf4j(topic = "JwtUtil")
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
     // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -30,23 +32,9 @@ public class JwtUtil {
 //    private final long ACCESS_TOKEN_TIME = 1000L; // 1초
     private final long REFRESH_TOKEN_TIME = 24 * 60 * 60 * 1000L; // 1일
 
-    @Value("${jwt.access.secret.key}") // Base64 Encode 한 SecretKey
-    private String accessSecretKey;
-
-    @Value("${jwt.refresh.secret.key}") // Base64 Encode 한 SecretKey
-    private String refreshSecretAKey;
-    private Key accessKey;
-    private Key refreshKey;
-    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
-    @PostConstruct
-    public void init() {
-        byte[] accessBytes = Base64.getDecoder().decode(accessSecretKey);
-        accessKey = Keys.hmacShaKeyFor(accessBytes);
-
-        byte[] refreshBytes = Base64.getDecoder().decode(refreshSecretAKey);
-        refreshKey = Keys.hmacShaKeyFor(refreshBytes);
-    }
+    private final Key accessKey;
+    private final Key refreshKey;
+    private final SignatureAlgorithm signatureAlgorithm;
 
     // 토큰 생성
     public String createAccessToken(String username, UserRoleEnum role) {

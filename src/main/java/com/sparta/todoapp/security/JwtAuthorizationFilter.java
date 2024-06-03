@@ -40,38 +40,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String tokenValue = jwtUtil.getJwtFromHeader(req, isAccessToken);
 
         if (StringUtils.hasText(tokenValue)) {
-            log.info("token value: " + tokenValue);
 
-            switch (jwtUtil.validateToken(tokenValue, isAccessToken)) {
-                case EXPIRE:
-                    if (isAccessToken) {
-                        // client로 refresh Token을 요청하는 패킷 보내기
-                        res.setStatus(401);
-                        res.setContentType("text/plain;charset=UTF-8");
-                        res.getWriter().write("Access Token이 만료되었습니다. Refresh Token을 보내 갱신하세요.");
-                    } else {
-                        // 로그아웃 시킨다.
-                    }
-                case INVALID_SIGNATURE:
-                case UNSSPORT:
-                case EMPTY:
-                    res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    res.setContentType("text/plain;charset=UTF-8");
-                    res.getWriter().write("토큰이 유효하지 않습니다.");
-                    return;
-                case NOT_ERROR:
-                    break;
-            }
+            checkValidateTokenAndErrorHandling(res, tokenValue, isAccessToken);
 
             Claims info = jwtUtil.getUserInfoFromToken(tokenValue, isAccessToken);
 
             if (!isAccessToken) {
-                UserRoleEnum role = userRepository.findByUsername(info.getSubject()).orElseThrow(
-                        () -> new IllegalArgumentException("해당 사용자는 없습니다.")
-                ).getRole();
-                String accessToken = jwtUtil.createAccessToken(info.getSubject(), role);
-                res.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-                res.getWriter().write("new access token");
+                sendNewAccessToken(res, info);
                 return;
             }
 
@@ -86,6 +61,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(req, res);
     }
 
+
     // 인증 처리
     public void setAuthentication(String username) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -99,5 +75,37 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private Authentication createAuthentication(String username) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+
+    private void checkValidateTokenAndErrorHandling(HttpServletResponse res, String tokenValue, boolean isAccessToken) throws IOException {
+        switch (jwtUtil.validateToken(tokenValue, isAccessToken)) {
+            case EXPIRE:
+                if (isAccessToken) {
+                    // client로 refresh Token을 요청하는 패킷 보내기
+                    res.setStatus(401);
+                    res.setContentType("text/plain;charset=UTF-8");
+                    res.getWriter().write("Access Token이 만료되었습니다. Refresh Token을 보내 갱신하세요.");
+                } else {
+                    // 로그아웃 시킨다.
+                }
+            case INVALID_SIGNATURE:
+            case UNSSPORT:
+            case EMPTY:
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.setContentType("text/plain;charset=UTF-8");
+                res.getWriter().write("토큰이 유효하지 않습니다.");
+                return;
+            case NOT_ERROR:
+                break;
+        }
+    }
+
+    private void sendNewAccessToken(HttpServletResponse res, Claims info) throws IOException {
+        UserRoleEnum role = userRepository.findByUsername(info.getSubject()).orElseThrow(
+                () -> new IllegalArgumentException("해당 사용자는 없습니다.")
+        ).getRole();
+        String accessToken = jwtUtil.createAccessToken(info.getSubject(), role);
+        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+        res.getWriter().write("new access token");
     }
 }
